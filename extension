@@ -1,0 +1,68 @@
+// ==UserScript==
+// @name         RealZoo Egg Clicker
+// @namespace    http://tampermonkey.net/
+// @version      0.6
+// @description  Automate egg clicking and other features for RealZoo
+// @author       Squirtles
+// @match        https://realzoo.itsyipy.com/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    let interval = 5000; // Default 5 seconds
+    let initialAnimalCount = null;
+    let scriptStartTime = Date.now();
+
+    // Function to click the egg
+    function clickEgg() {
+        let eggElement = document.querySelector('img[src*="Egg.png"]');
+        if (eggElement) {
+            eggElement.click();
+        }
+    }
+
+    // Function to close the modal that appears after clicking
+    function closeModal() {
+        let modalElement = document.querySelector('#myModal');
+        if (modalElement) {
+            modalElement.click();
+        }
+    }
+
+    // Function to mute sounds
+    function muteSounds() {
+        let muteButton = document.querySelector('button > svg > path[fill="none"][stroke-linecap="round"]');
+        if (muteButton && muteButton.parentElement && muteButton.parentElement.parentElement) {
+            muteButton.parentElement.parentElement.click();
+        }
+    }
+
+    // Function to refresh the page if animal count increases
+    function checkAnimalCount() {
+        let animalCountElement = document.querySelector('h1.text-yellow-500');
+        if (animalCountElement) {
+            let currentCount = parseInt(animalCountElement.textContent.split(' ')[1]);
+            if (initialAnimalCount === null) {
+                initialAnimalCount = currentCount;
+            } else if (currentCount > initialAnimalCount) {
+                location.reload();
+            }
+        }
+    }
+
+    // Main function to execute the features
+    function main() {
+        clickEgg();
+        closeModal();
+        muteSounds();
+        if (Date.now() - scriptStartTime > 60000) { // 60 seconds
+            checkAnimalCount();
+        }
+    }
+
+    // Run the main function at the specified interval
+    setInterval(main, interval);
+
+})();
